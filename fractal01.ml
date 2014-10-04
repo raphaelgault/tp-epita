@@ -43,6 +43,9 @@ let triangle (x,y) (z,t) =
 		line (x,y) (u,v+h);
 		line (u,v+h) (z,t);;
 	
+let vertex (x,y) (z,t) = 
+	let (u,v) = (mid (x,y) (z,t)) and h = height (x,y) (z,t) in
+		(u,v+h);;
 
 
 let rec sierpinski n (x,y) (z,t) =
@@ -51,6 +54,8 @@ let rec sierpinski n (x,y) (z,t) =
 		| n -> triangle (x,y) (z,t); 
 			sierpinski (n-1) (x,y) (mid (x,y) (z,t));
 			sierpinski (n-1) (mid(x,y) (z,t)) (z,t);
-			(*sierpinski (n-1) (mid (mid(x,y) (z,t)) (x,y),(heigth(x,y) (z,t))/2) ((mid (mid(x,y) (z,t)) (z,t),(heigth(x,y) (z,t))/2));;*)
+			sierpinski (n-1) (vertex ((x,y) (mid (x,y) (z,t)))) (vertex((mid(x,y) (z,t)) (z,t)));;
 
+
+(*  vertex ((mid(x,y) (z,t)) (z,t)) vertex ((x,y) (mid (x,y) (z,t)))     *)
 	
