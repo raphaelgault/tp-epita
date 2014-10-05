@@ -27,6 +27,7 @@ let rec dragon n (x,y) (z,t) =
                 dragon (n-1) (u, v) (z,t);
               end;;
 
+(* determine the height of the triangle *)
 let height (x,y) (z,t) =
 	let xab = z - x and yab = t - y in
                let length = sqrt(float_of_int(xab*xab + yab*yab)) in
@@ -64,5 +65,35 @@ let rec sierpinski n (x,y) (z,t) =
 				sierpinski (n-1) (u,v) (i,j);;
 
 
-(*  vertex ((mid(x,y) (z,t)) (z,t)) vertex ((x,y) (mid (x,y) (z,t)))     *)
+
+let rec cross n (x,y) w = 
+	match n with
+		|0 -> fill_rect x y (w/3) (w/3); 
+			fill_rect x (y+(2*(w/3))) (w/3) (w/3); 
+			fill_rect (x+(2*(w/3))) (y+(2*(w/3))) (w/3) (w/3);
+			fill_rect (x+(2*(w/3))) y (w/3) (w/3);
+			fill_rect (x+(w/3)) (y+(w/3)) (w/3) (w/3);
+		|n -> cross (n-1) (x,y) (w/3);
+			cross (n-1) (x,(y+(2*(w/3)))) (w/3);
+			cross (n-1) ((x+(2*(w/3))),y) (w/3);
+			cross (n-1) ((x+(2*(w/3))),(y+(2*(w/3)))) (w/3);
+			cross (n-1) ((x+(w/3)),(y+(w/3))) (w/3);;
+
+let rec star n (x,y) w =
+	match n with
+		|0 -> fill_rect (x+(w/3)) y (w/3) (w/3);
+			fill_rect x (y+(w/3)) (w/3) (w/3);
+			fill_rect (x+(w/3)) (y+(w/3)) (w/3) (w/3);
+			fill_rect (x+(w/3)) (y+(2*(w/3))) (w/3) (w/3);
+			fill_rect (x+((2*w/3))) (y+(w/3)) (w/3) (w/3);
+		|n -> star (n-1) ((x+(w/3)), y) (w/3);
+			star (n-1) (x,(y+(w/3))) (w/3);
+			star (n-1) ((x+(w/3)),(y+(w/3))) (w/3);
+			star (n-1) ((x+(w/3)),(y+(2*(w/3)))) (w/3);
+			star (n-1) ((x+((2*w/3))),(y+(w/3))) (w/3);
+
+
+
+
+
 	
