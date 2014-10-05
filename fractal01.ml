@@ -33,28 +33,35 @@ let height (x,y) (z,t) =
 			int_of_float(sqrt(length*.length +. length/.2.));;
 
 
+(* determine the middle betwin 2 points *)
 let mid (x,y) (z,t) = 
 	((x+z)/2,(y+t)/2);;
 
 
+(* draw a triangle *)
 let triangle (x,y) (z,t) = 
 	let (u,v) = (mid (x,y) (z,t)) and h = height (x,y) (z,t) in
 		line (x,y) (z,t);
 		line (x,y) (u,v+h);
 		line (u,v+h) (z,t);;
 	
+
+(* determine the vertex of a triangle *)
 let vertex (x,y) (z,t) = 
 	let (u,v) = (mid (x,y) (z,t)) and h = height (x,y) (z,t) in
 		(u,v+h);;
 
 
+(* draw the sierpinski triangle *)
 let rec sierpinski n (x,y) (z,t) =
-	match n with 
-		| 0 -> triangle (x,y) (z,t);
-		| n -> triangle (x,y) (z,t); 
-			sierpinski (n-1) (x,y) (mid (x,y) (z,t));
-			sierpinski (n-1) (mid(x,y) (z,t)) (z,t);
-			sierpinski (n-1) (vertex ((x,y) (mid (x,y) (z,t)))) (vertex((mid(x,y) (z,t)) (z,t)));;
+	(* let (m,n) = (mid (x,y) (z,t)) in *)
+	let (u,v) = vertex(x,y) (mid (x,y) (z,t)) and (i,j) = vertex(mid (x,y) (z,t)) (z,t) in
+		match n with 
+			| 0 -> triangle (x,y) (z,t);
+			| n -> triangle (x,y) (z,t); 
+				sierpinski (n-1) (x,y) (mid (x,y) (z,t));
+				sierpinski (n-1) (mid(x,y) (z,t)) (z,t);
+				sierpinski (n-1) (u,v) (i,j);;
 
 
 (*  vertex ((mid(x,y) (z,t)) (z,t)) vertex ((x,y) (mid (x,y) (z,t)))     *)
