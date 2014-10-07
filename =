@@ -169,23 +169,18 @@ let letter_to_morse c =
 (* 2.1_ Conversion *)
 
 let word_to_morse l = 
-	let rec aux l = 
+	let rec aux l =
 		match l with
 		|[] -> []
-		|h::t -> append [letter_to_morse h] (aux t)
-	in
-	aux l;;	
+		|h::t -> append (letter_to_morse h) (aux t);; 	
+		
 
 
 
 
 
 
-(* 2.2_ Another way to see things *)
 
-let rec to_single_list = function 
-	|[] -> []
-	|h::t -> append (append h [' ']) (to_single_list t);; 
 
 
 
