@@ -1,5 +1,5 @@
 (*====================================
-		STAGE 01 
+		STAGE 00 
 ====================================*)
 
 
@@ -168,13 +168,9 @@ let letter_to_morse c =
 
 (* 2.1_ Conversion *)
 
-let word_to_morse l = 
-	let rec aux l = 
-		match l with
-		|[] -> []
-		|h::t -> append [letter_to_morse h] (aux t)
-	in
-	aux l;;	
+let rec word_to_morse = function 
+	|[] -> []
+	|h::t -> append [letter_to_morse h] (word_to_morse t);;	
 
 
 
@@ -192,16 +188,32 @@ let rec to_single_list = function
 
 
 
+(* 2.3_ Printing *)
+
+let display_2 l = 
+	print_char('[');
+	let rec aux = function
+		|[] -> print_char (']')
+		|h::[] -> display h; print_char(']')
+		|h::t -> display h ;print_char(';'); aux t
+	in
+	aux l;;
+	
 
 
 
 
 
 
+(*=========================================
+		STAGE 03
+=========================================*)
 
 
 
-
+let rec sentence_to_morse = function 
+	|[] -> []
+	|h::t -> append [word_to_morse] (sentence_to_morse t);;
 
 
 
