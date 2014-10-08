@@ -246,7 +246,19 @@ let latin_sentence_to_single l =
 (* Encode Me *)
 
 
-
+let latin_to_morse s = 
+	let length = String.length s in
+	let rec aux n = 
+		if s.[n] <> ' ' then
+			match n with
+			|n when n = length-1 -> letter_to_morse s.[n] 
+			|_ -> append (append((letter_to_morse s.[n]) [' ']) (aux (n+1)))
+		else
+			match n with
+			|n when n = length-1 -> []
+			|_ -> append (['/'] (aux (n+1)))
+	in
+	aux 0;;
 
 
 
