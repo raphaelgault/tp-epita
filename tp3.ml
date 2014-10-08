@@ -210,19 +210,40 @@ let display_2 l =
 =========================================*)
 
 
+(* 3.1_ Conversion (again) *)
 
 let rec sentence_to_morse = function 
 	|[] -> []
-	|h::t -> append [word_to_morse] (sentence_to_morse t);;
+	|h::t -> append [word_to_morse h] (sentence_to_morse t);;
 
 
 
 
+(* 3.2_ char list list *)
+
+let rec sentence_to_single_list = function
+	|[] -> []
+	|h::t -> append (append (to_single_list h) ['/']) (sentence_to_single_list t);;
 
 
 
 
+(* 3.3_ Non Stop *)
 
+let to_single_morse l = 
+	to_single_list (word_to_morse l);;
+
+
+let latin_sentence_to_single l =
+	sentence_to_single_list (sentence_to_morse l);;
+
+
+
+(*=========================================
+		STAGE 04
+=========================================*)
+
+(* Encode Me *)
 
 
 
