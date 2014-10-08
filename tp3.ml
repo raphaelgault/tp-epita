@@ -273,3 +273,20 @@ let list_to_string l =
 let latin_to_morse s =
 	list_to_string (string_to_single_list s);;
 
+
+(* Decode Me *)
+
+let string_to_morse_list s = 
+	let length = String.length s and l = [[]] in
+	let rec aux n =
+		if s.[n] <> '/' then
+		begin
+			if s.[n] <> ' ' then
+				match n with
+				|n when n = length-1 -> [s.[n]]
+				|_ -> append [s.[n] aux(n-1)
+			else
+			match n with
+				|n when n = length-1 -> []
+				|_ 
+		end
