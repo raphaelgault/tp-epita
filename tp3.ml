@@ -276,6 +276,53 @@ let latin_to_morse s =
 
 (* Decode Me *)
 
+let morse_to_letter l =
+	if is_morse l then
+	begin
+	match l  with
+                | _A -> 'A'
+                | _B -> 'B'
+                | _C -> 'C'
+                | _D -> 'D'
+                | _E -> 'E'
+                | _F -> 'F'
+                | _G -> 'G'
+                | _H -> 'H'
+                | _I -> 'I'
+                | _J -> 'J'
+                | _K -> 'K'
+                | _L -> 'L'
+                | _M -> 'M'
+                | _N -> 'N'
+                | _O -> 'O'
+                | _P -> 'P'
+                | _Q -> 'Q'
+                | _R -> 'R'
+                | _S -> 'S'
+                | _T -> 'T'
+                | _U -> 'U'
+                | _V -> 'V'
+                | _W -> 'W'
+                | _X -> 'X'
+                | _Y -> 'Y'
+                | _Z -> 'Z'
+                | _0 -> '0'
+                | _1 -> '1'
+                | _2 -> '2'
+                | _3 -> '3'
+                | _4 -> '4'
+                | _5 -> '5'
+                | _6 -> '6'
+                | _7 -> '7'
+                | _8 -> '8'
+                | _9 -> '9' 
+                |_ -> failwith "error"
+        end
+        else
+        failwith "not some morse";;
+
+
+(*
 let string_to_morse_list s = 
 	let length = String.length s and l = [[]] in
 	let rec aux n =
@@ -290,3 +337,25 @@ let string_to_morse_list s =
 				|n when n = length-1 -> []
 				|_ 
 		end
+		else;; *)
+
+
+
+
+
+
+
+let string_to_list_morse s = 
+	let length = String.length s in
+	let rec aux  n s =
+		if n < length then
+		begin
+			match s.[n] with
+				|'/' 
+
+
+		end
+		else
+			
+
+  
