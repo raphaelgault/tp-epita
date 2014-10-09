@@ -1,4 +1,7 @@
 #use "morse.ml";;
+#load "unix.cma";;
+#directory "+threads";;
+#load "threads.cma";;
 
 
 (*====================================
@@ -76,8 +79,9 @@ let display l =
 
 let rec is_morse = function
 		|[] -> true
-		|h::t when h = '.' || h = '-' -> is_morse t
-		|_ -> false;;
+		|h::t -> match h with 
+				|'.'|'-'|' '|'/' ->is_morse t
+				|_ -> false;;
 
 
 
@@ -254,11 +258,11 @@ let string_to_single_list s =
 	let rec aux n = 
 		if s.[n] <> ' ' then
 			match n with
-			|n when n = length-1 -> letter_to_morse s.[n] 
+			|n when n = length-1 -> append (letter_to_morse s.[n]) ['/'] 
 			|_ -> append (append (letter_to_morse s.[n]) [' ']) (aux(n+1))
 		else
 			match n with
-			|n when n = length-1 -> []
+			|n when n = length-1 -> ['/']
 			|_ -> append ['/'] (aux (n+1))
 	in
 	aux 0;;
@@ -280,42 +284,42 @@ let morse_to_letter l =
 	if is_morse l then
 	begin
 	match l  with
-                | _A -> 'A'
-                | _B -> 'B'
-                | _C -> 'C'
-                | _D -> 'D'
-                | _E -> 'E'
-                | _F -> 'F'
-                | _G -> 'G'
-                | _H -> 'H'
-                | _I -> 'I'
-                | _J -> 'J'
-                | _K -> 'K'
-                | _L -> 'L'
-                | _M -> 'M'
-                | _N -> 'N'
-                | _O -> 'O'
-                | _P -> 'P'
-                | _Q -> 'Q'
-                | _R -> 'R'
-                | _S -> 'S'
-                | _T -> 'T'
-                | _U -> 'U'
-                | _V -> 'V'
-                | _W -> 'W'
-                | _X -> 'X'
-                | _Y -> 'Y'
-                | _Z -> 'Z'
-                | _0 -> '0'
-                | _1 -> '1'
-                | _2 -> '2'
-                | _3 -> '3'
-                | _4 -> '4'
-                | _5 -> '5'
-                | _6 -> '6'
-                | _7 -> '7'
-                | _8 -> '8'
-                | _9 -> '9' 
+                | l when l = _A -> 'A'
+                | l when l = _B -> 'B'
+                | l when l = _C -> 'C'
+                | l when l = _D -> 'D'
+                | l when l = _E -> 'E'
+                | l when l = _F -> 'F'
+                | l when l = _G -> 'G'
+                | l when l = _H -> 'H'
+                | l when l = _I -> 'I'
+                | l when l = _J -> 'J'
+                | l when l = _K -> 'K'
+                | l when l = _L -> 'L'
+                | l when l = _M -> 'M'
+                | l when l = _N -> 'N'
+                | l when l = _O -> 'O'
+                | l when l = _P -> 'P'
+                | l when l = _Q -> 'Q'
+                | l when l = _R -> 'R'
+                | l when l = _S -> 'S'
+                | l when l = _T -> 'T'
+                | l when l = _U -> 'U'
+                | l when l = _V -> 'V'
+                | l when l = _W -> 'W'
+                | l when l = _X -> 'X'
+                | l when l = _Y -> 'Y'
+                | l when l = _Z -> 'Z'
+                | l when l = _0 -> '0'
+                | l when l = _1 -> '1'
+                | l when l = _2 -> '2'
+                | l when l = _3 -> '3'
+                | l when l = _4 -> '4'
+                | l when l = _5 -> '5'
+                | l when l = _6 -> '6'
+                | l when l = _7 -> '7'
+                | l when l = _8 -> '8'
+                | l when l = _9 -> '9' 
                 |_ -> failwith "error"
         end
         else
@@ -343,19 +347,48 @@ let string_to_morse_list s =
 
 
 
+let word_to_latin l = 
+	let rec aux c = function
+			|[] -> ""
+			|' '::t -> String.make 1 (morse_to_letter c) ^ aux [] t
+			|h::t -> aux (append c [h]) t
+	in
+	aux [] l;;
 
-
-let string_to_list_morse s = 
+let morse_to_latin_string s = 
 	let length = String.length s in
-	let rec aux  n s =
-		if n < length then
+	let rec aux  w n =
+		if n < length-1 then
 		begin
 			match s.[n] with
-				|'/' 
-
-
+				|'/' -> (word_to_latin w) ^ " " ^ aux [] (n+1) (* transformer on lettre *)
+				|c -> aux (append w [c]) (n+1)
 		end
 		else
+			word_to_latin w(* transformer en lettre *)
+	in
+	aux [] 0;;
 			
 
+let display_rhythm s = 
+	let length = String.length s in
+	let rec aux n = 
+		if n < length then
+			begin
+			print_char s.[n];
+			flush stdout;
+			(	match s.[n] with
+				|'.'|'-' -> Thread.delay dits
+				|' ' ->  Thread.delay dahs
+				|'/' ->  Thread.delay gap
+			);	
+			aux (n+1);
+			end
+	in 
+	aux 0;; 
+
+
+display_rhythm "... --- ... / ---- /";;
+		
+			
   
