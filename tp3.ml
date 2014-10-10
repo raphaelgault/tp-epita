@@ -278,6 +278,12 @@ let latin_to_morse s =
 	list_to_string (string_to_single_list s);;
 
 
+
+(*==========================================
+		STAGE 05
+==========================================*)
+
+
 (* Decode Me *)
 
 let morse_to_letter l =
@@ -323,7 +329,7 @@ let morse_to_letter l =
                 |_ -> failwith "error"
         end
         else
-        failwith "not some morse";;
+        failwith "not morse code";;
 
 
 (*
@@ -368,6 +374,12 @@ let morse_to_latin_string s =
 			word_to_latin w(* transformer en lettre *)
 	in
 	aux [] 0;;
+
+
+(*===========================================
+		STAGE 06
+===========================================*)
+
 			
 
 let display_rhythm s = 
