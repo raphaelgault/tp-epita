@@ -179,7 +179,7 @@ let letter_to_morse c =
 (* 2.1_ Conversion *)
 
 let rec word_to_morse = function 
-	|[] -> []
+	|[] -> [] 
 	|h::t -> append [letter_to_morse h] (word_to_morse t);;	
 
 
@@ -191,6 +191,7 @@ let rec word_to_morse = function
 
 let rec to_single_list = function 
 	|[] -> []
+	|h::[] -> h
 	|h::t -> append (append h [' ']) (to_single_list t);; 
 
 
