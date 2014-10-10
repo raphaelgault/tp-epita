@@ -2,6 +2,9 @@
 #load "unix.cma";;
 #directory "+threads";;
 #load "threads.cma";;
+#load "graphics.cma";;
+open Graphics;;
+open_graph "";;
 
 
 (*====================================
@@ -390,9 +393,10 @@ let display_rhythm s =
 			print_char s.[n];
 			flush stdout;
 			(	match s.[n] with
-				|'.'|'-' -> Thread.delay dits
-				|' ' ->  Thread.delay dahs
-				|'/' ->  Thread.delay gap
+				|'.' -> Thread.delay dits;sound 440 (int_of_float(dits *. 1000.));Thread.delay dits
+				|'-' -> Thread.delay dahs;sound 440 (int_of_float(dahs *. 1000.));Thread.delay dits
+				|' ' -> Thread.delay dahs;Thread.delay dits
+				|'/' -> Thread.delay gap;Thread.delay dits
 			);	
 			aux (n+1);
 			end
@@ -401,6 +405,10 @@ let display_rhythm s =
 
 
 display_rhythm "... --- ... / ---- /";;
+
+
+
+
 		
 			
   
