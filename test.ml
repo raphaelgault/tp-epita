@@ -25,7 +25,7 @@ display_2 [['t';'o'];['m'];['e']];;
 
 sentence_to_morse [['t';'o'];['m'];['e']];;
 
-sentence_to_single_list  [[['-']; ['-'; '-'; '-'']]; [['-'; '-'']; ['.']]];;
+sentence_to_single_list  [[['-']; ['-'; '-'; '-']]; [['-'; '-']; ['.']]];;
 
 to_single_morse ['t';'o'];;
 
