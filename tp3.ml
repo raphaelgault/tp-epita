@@ -414,8 +414,6 @@ let display_rhythm s =
 	aux 0;; 
 
 
-display_rhythm "... --- ... / ---- /";;
-
 
 
 

@@ -6,6 +6,11 @@
 ====================================*)
 
 
+(* the idea is that to use these functions with any code -not only morse- 
+you should include your own dictionnary (using : " #use "dictionnary.ml" " in the ocaml interpretor)
+you may use the morse.ml dictionnary joined in the zip file *)
+
+
 let encode_letter  c = 
 		match c with
 		| 'A'| 'a'-> _A
