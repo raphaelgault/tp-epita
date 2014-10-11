@@ -136,7 +136,8 @@ let decode_letter l =
 
 let decode_word l = 
 	let rec aux c = function
-			|[] -> ""
+			|[] when is_empty c -> ""
+			|[] -> String.make 1 (decode_letter c)
 			|' '::t -> String.make 1 (decode_letter c) ^ aux [] t
 			|h::t -> aux (append c [h]) t
 	in
@@ -145,16 +146,14 @@ let decode_word l =
 let decode_string s = 
 	let length = String.length s in
 	let rec aux  w n =
-		if n < (length) then
+		if n < (length+1) then
 		begin
 			match s.[n] with
 				|'/' -> (decode_word w) ^ " " ^ aux [] (n+1) (* transformer on lettre *)
 				|c -> aux (append w [c]) (n+1)
 		end
 		else
-			begin
-			display w;decode_word w(* transformer en lettre *)
-			end
+			decode_word w(* transformer en lettre *)		
 	in
 	aux [] 0;;
 

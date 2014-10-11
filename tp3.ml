@@ -7,6 +7,14 @@ open Graphics;;
 open_graph "";;
 
 
+(* addon : control of the content of a list *)
+let is_empty = function
+	|[] -> true
+	|_ -> false ;;
+
+
+
+
 (*====================================
 		STAGE 00 
 ====================================*)
@@ -359,11 +367,12 @@ let string_to_morse_list s =
 
 let word_to_latin l = 
 	let rec aux c = function
-			|[] -> ""
-			|' '::t -> String.make 1 (morse_to_letter c) ^ aux [] t
-			|h::t -> aux (append c [h]) t
-	in
-	aux [] l;;
+                         |[] when is_empty c -> ""
+                         |[] -> String.make 1 (morse_to_letter c)
+                         |' '::t -> String.make 1 (morse_to_letter c) ^ aux [] t
+                         |h::t -> aux (append c [h]) t
+         in
+         aux [] l;;
 
 let morse_to_latin_string s = 
 	let length = String.length s in
