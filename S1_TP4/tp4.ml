@@ -1,4 +1,4 @@
-	#load "graphics.cma";;
+#load "graphics.cma";;
 open Graphics;;
 open_graph "";;
 
@@ -142,5 +142,20 @@ let draw_board board size =
 
 (* 3.1 Cell *)
 
+let get_element e l = 
+  let rec aux n = function
+    |[] -> failwith "out of bounds : not inside the list"
+    |h::t -> 
+      if n = e then h 
+      else aux (n+1) t
+  in aux 1 l;;
+
 let get_cell (x,y) board = 
+ let rec aux n = function
+    |[] -> failwith "out of bound : not on the board"
+    |h::t -> 
+      if n = x then get_element y h
+      else aux (n+1) t
+  in
+  aux 1 board;;
 
