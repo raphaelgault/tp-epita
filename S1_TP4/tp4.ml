@@ -159,3 +159,47 @@ let get_cell (x,y) board =
   in
   aux 1 board;;
 
+
+(* 3.2 Replace *)
+
+let replace_element value element l = 
+  let rec aux n = function
+    |[] -> failwith "out of bounds : not inside the list"
+    |h::t -> 
+      if n = element then value::t
+      else h::aux(n+1) t
+  in aux 1 l;;
+
+let replace_cell value (x,y) board =  
+  let rec aux n = function
+    |[] -> failwith "out of bounds : not on the board"
+    |h::t -> 
+      if n = x then (replace_element value y h)::t
+      else h::aux(n+1) t
+  in aux 1 board;;
+
+
+(* 3.3 Seed Life *)
+
+let my_list_length l =
+  let rec aux n = function
+    |[] -> n
+    |h::t -> aux (n+1) t
+  in aux 0 l;;
+
+let seed_life board n = 
+  let length = my_list_length board in
+  if length*length - remaining board <= n then
+    failwith "not enough space on the board"
+  else
+    let rec aux board n = 
+      let x = (Random.int (length-1))+1 and y = (Random.int (length-1))+1 in  
+      if (get_cell (x,y) board) = 1 then
+        aux board n
+      else
+      match n with
+        |0 -> board
+        |n -> aux (replace_cell 1 (x,y) board) (n-1)
+    in
+    aux board n;;
+
