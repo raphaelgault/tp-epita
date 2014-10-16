@@ -205,6 +205,7 @@ let seed_life board n =
 
 (* 3.4 Neighborhood *)
 
+(* 
 let get_cell_neighborhood (x,y) board =
   let length = my_list_length board in
   if (x) > 1 && (y) > 1 then
@@ -213,6 +214,75 @@ let get_cell_neighborhood (x,y) board =
       (get_cell(x-1,y)board)::(get_cell(x+1,y)board)::
       (get_cell(x-1,y-1)board)::(get_cell(x,y-1)board)::(get_cell(x+1,y-1)board)::[]
     else
-      failwith "haha"
+      if (x+1) <= length then
+        (get_cell(x-1,y)board)::(get_cell(x+1,y)board)::
+        (get_cell(x-1,y-1)board)::(get_cell(x,y-1)board)::(get_cell(x+1,y-1)board)::[]
+      else 
   else
-    failwith "hehe";;
+    failwith "hehe";; 
+*)
+
+
+let get_cell_neighborhood (x,y) board =
+  let length = my_list_length board in
+  if x > 0 && x <= length && y > 0 && y <= length then
+    match (x,y) with
+    (*the 4 corners *)
+    | (x,y) when x = length && y = length -> (get_cell(x-1,y)board)::(get_cell(x-1,y-1)board)::(get_cell(x,y-1)board)::[]
+    | (1,y) when y = length -> (get_cell(x+1,y)board)::(get_cell(x,y-1)board)::(get_cell(x+1,y-1)board)::[]
+    | (x,1) when x = length -> (get_cell(x-1,y+1)board)::(get_cell(x,y+1)board)::(get_cell(x+1,y)board)::[]
+    | (1,1) -> (get_cell(x,y+1)board)::(get_cell(x+1,y+1)board)::(get_cell(x+1,y)board)::[]
+    (*the 4 sides *)
+    | (1,y) when y <= length-1 -> (get_cell(x,y+1)board)::(get_cell(x+1,y+1)board)::
+              (get_cell(x+1,y)board)::
+              (get_cell(x,y-1)board)::(get_cell(x+1,y-1)board)::[]
+    | (x,y) when x = length && y <= length-1 -> (get_cell(x-1,y+1)board)::(get_cell(x,y+1)board)::
+              (get_cell(x-1,y)board)::
+              (get_cell(x-1,y-1)board)::(get_cell(x,y-1)board)::[]
+    | (x,1) when x <= length-1 -> (get_cell(x-1,y+1)board)::(get_cell(x,y+1)board)::(get_cell(x+1,y+1)board)::
+              (get_cell(x-1,y)board)::(get_cell(x+1,y)board)::[]
+    | (x,y) when x <= length-1 && y = length -> (get_cell(x-1,y)board)::(get_cell(x+1,y)board)::
+              (get_cell(x-1,y-1)board)::(get_cell(x,y-1)board)::(get_cell(x+1,y-1)board)::[]
+    | (x,y) -> (get_cell(x-1,y+1) board)::(get_cell(x,y+1)board)::(get_cell(x+1,y+1)board)::
+              (get_cell(x-1,y)board)::(get_cell(x+1,y)board)::
+              (get_cell(x-1,y-1)board)::(get_cell(x,y-1)board)::(get_cell(x+1,y-1)board)::[]
+  else
+    failwith "out of the board";;
+
+
+(*===============================================
+                  STAGE 04 - Game
+===============================================*)
+
+(* 4.1 Iteration *)
+
+let iterate board =
+  let length = my_list_length board in
+  let rec aux (x,y) board =
+    match x with
+      |x when x <= length ->begin
+          match y with
+            |y when y <= length -> begin
+              if (get_cell(x,y) board) = 1 then
+                match cell_count(get_cell_neighborhood (x,y) board) with
+                |n when n < 2 -> aux(x,y+1) (replace_cell 0 (x,y) board) (*dies*)
+                |n when n > 3 -> aux(x,y+1)(replace_cell 0 (x,y) board) (*dies*)
+                |_ -> aux(x,y+1) board (*lives/stays alive*)
+              else  
+                (match cell_count(get_cell_neighborhood (x,y) board) with
+                |3 -> aux(x,y+1)(replace_cell 1 (x,y) board) (*lives / comes to live *)
+                |_ -> aux(x,y+1) board)
+            end
+            |_ -> aux(x+1,1) board
+      end
+      |_ -> board
+  in
+  aux (1,1) board;;
+
+
+  (* 4.2 Play *)
+
+let rec play board =
+  match remaining(board) with
+  | 0 -> draw_board board 20
+  | _ -> draw_board board 20; play (iterate board);;
