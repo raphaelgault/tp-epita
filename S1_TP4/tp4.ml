@@ -206,3 +206,13 @@ let seed_life board n =
 (* 3.4 Neighborhood *)
 
 let get_cell_neighborhood (x,y) board =
+  let length = my_list_length board in
+  if (x) > 1 && (y) > 1 then
+    if (x+1) <= length && (y+1) <= length then
+      (get_cell(x-1,y+1) board)::(get_cell(x,y+1)board)::(get_cell(x+1,y+1)board)::
+      (get_cell(x-1,y)board)::(get_cell(x+1,y)board)::
+      (get_cell(x-1,y-1)board)::(get_cell(x,y-1)board)::(get_cell(x+1,y-1)board)::[]
+    else
+      failwith "haha"
+  else
+    failwith "hehe";;
