@@ -203,3 +203,6 @@ let seed_life board n =
     in
     aux board n;;
 
+(* 3.4 Neighborhood *)
+
+let get_cell_neighborhood (x,y) board =
