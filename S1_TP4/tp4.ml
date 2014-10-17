@@ -1,3 +1,4 @@
+#load "unix.cma";;
 #load "graphics.cma";;
 open Graphics;;
 open_graph "";;
@@ -164,7 +165,7 @@ let get_cell (x,y) board =
 
 let replace_element value element l = 
   let rec aux n = function
-    |[] -> failwith "out of bounds : not inside the list"
+    |[] -> failwith "out of bounds : not inside Ze list"
     |h::t -> 
       if n = element then value::t
       else h::aux(n+1) t
@@ -224,13 +225,13 @@ let get_cell_neighborhood (x,y) board =
 
 
 let get_cell_neighborhood (x,y) board =
-  let length = my_list_length board in
+  let length = my_list_length board -1 in
   if x > 0 && x <= length && y > 0 && y <= length then
     match (x,y) with
     (*the 4 corners *)
     | (x,y) when x = length && y = length -> (get_cell(x-1,y)board)::(get_cell(x-1,y-1)board)::(get_cell(x,y-1)board)::[]
     | (1,y) when y = length -> (get_cell(x+1,y)board)::(get_cell(x,y-1)board)::(get_cell(x+1,y-1)board)::[]
-    | (x,1) when x = length -> (get_cell(x-1,y+1)board)::(get_cell(x,y+1)board)::(get_cell(x+1,y)board)::[]
+    | (x,1) when x = length -> (get_cell(x-1,y+1)board)::(get_cell(x,y+1)board)::(get_cell(x-1,y)board)::[]
     | (1,1) -> (get_cell(x,y+1)board)::(get_cell(x+1,y+1)board)::(get_cell(x+1,y)board)::[]
     (*the 4 sides *)
     | (1,y) when y <= length-1 -> (get_cell(x,y+1)board)::(get_cell(x+1,y+1)board)::
@@ -257,7 +258,7 @@ let get_cell_neighborhood (x,y) board =
 (* 4.1 Iteration *)
 
 let iterate board =
-  let length = my_list_length board in
+  let length = my_list_length board -1 in
   let rec aux (x,y) board =
     match x with
       |x when x <= length ->begin
@@ -283,6 +284,138 @@ let iterate board =
   (* 4.2 Play *)
 
 let rec play board =
+  Unix.sleep(1);
+  clear_graph();
   match remaining(board) with
+  | 0 -> draw_board board 20
+  | _ -> draw_board board 20; play (iterate board);;
+
+
+(*==================================================
+                  STAGE 05 - Bonus
+==================================================*)
+
+(* 5.1 Health Points *)
+
+(*defining the colors corresponding to the differents levels of life *)
+let _10 = rgb 0 191 133 and
+_9 = rgb 0 247 107 and
+_8 = rgb 93 250 61 and
+_7 = rgb 168 250 61 and
+_6 = rgb 218 251 84 and
+_5 = rgb 247 247 7 and
+_4 = rgb 242 202 110 and 
+_3 = rgb 236 118 0 and
+_2 = rgb 247 74 0 and
+_1 = rgb 147 33 33 and
+_0 = rgb 42 42 42;;
+
+(** 5.1.1 Rules **)
+(** 5.1.2 Evolving **)
+
+let gen_rand_list_bonus n = 
+  let rec aux = function
+    |0 -> []
+    |n -> (Random.int(2) * 10):: aux(n-1)
+  in
+  aux n;;
+
+let gen_rand_board_bonus n =
+  let rec aux d = function
+    |0 -> [[]]
+    |n -> (gen_rand_list d) :: (aux d (n-1))
+  in
+  aux n n ;;
+
+let cell_count_bonus l =
+  let rec aux n = function
+    |[]  -> 0
+    |h::[] when h <= 1 -> n
+    |h::[] when h <= 10 && h > 1 -> n+1
+    |h::t when h <= 10 && h > 1 -> aux (n+1) t
+    |h::t when h <= 1 -> aux n t
+    |_ -> failwith "wrong element inside the list"
+  in 
+  aux 0 l;; 
+
+let remaining_bonus l =
+  let rec aux = function
+    |[] -> 0
+    |h::t -> cell_count_bonus h + aux t
+  in
+  aux l;;
+
+let draw_cell_bonus (x,y) size cell = 
+  match cell with
+    |n when n <= 0 -> draw_square (x,y) size
+    |1 -> draw_fill_square (x,y) size _1
+    |2 -> draw_fill_square (x,y) size _2
+    |3 -> draw_fill_square (x,y) size _3
+    |4 -> draw_fill_square (x,y) size _4
+    |5 -> draw_fill_square (x,y) size _5
+    |6 -> draw_fill_square (x,y) size _6
+    |7 -> draw_fill_square (x,y) size _7
+    |8 -> draw_fill_square (x,y) size _8
+    |9 -> draw_fill_square (x,y) size _9
+    |10 -> draw_fill_square (x,y) size _10
+    |_ -> draw_fill_square (x,y) size _10(*failwith "invalid cell"*);;
+
+let rec draw_line_bonus line size (x,y) =
+  match line with
+    |[] -> ()
+    |h::t -> draw_cell_bonus (x,y) size h; draw_line_bonus t size  (x+size,y);; 
+
+let draw_board_bonus board size = 
+  let (x,y) = (0,0) in
+  let rec aux (x,y) = function
+    |[] -> ()
+    |h::t -> draw_line_bonus h size (x,y); aux (x,y+size) t
+  in
+  aux (x,y) board;;
+
+let seed_life_bonus board n = 
+  let length = my_list_length board in
+  if length*length - remaining_bonus board <= n then
+    failwith "not enough space on the board"
+  else
+    let rec aux board n = 
+      let x = (Random.int (length-1))+1 and y = (Random.int (length-1))+1 in  
+      if (get_cell (x,y) board) <> 0 then
+        aux board n
+      else
+      match n with
+        |0 -> board
+        |n -> aux (replace_cell 10 (x,y) board) (n-1)
+    in
+    aux board n;;
+
+let iterate_bonus board =
+  let length = my_list_length board -1 in
+  let rec aux (x,y) board =
+    match x with
+      |x when x <= length ->begin
+          match y with
+            |y when y <= length -> begin
+              if (get_cell(x,y) board) = 1 then
+                match cell_count(get_cell_neighborhood (x,y) board) with
+                |n when n < 2 -> aux(x,y+1) (replace_cell (get_cell(x,y)board -2) (x,y) board) (*dies*)
+                |n when n = 3 -> aux(x,y+1)(replace_cell (get_cell(x,y)board +1) (x,y) board) (*dies*)
+                |n when n > 3 -> aux(x,y+1)(replace_cell (get_cell(x,y)board -5) (x,y) board) (*dies*)
+                |_ -> aux(x,y+1) board (*lives/stays alive*)
+              else  
+                (match cell_count(get_cell_neighborhood (x,y) board) with
+                |3 -> aux(x,y+1)(replace_cell 1 (x,y) board) (*lives / comes to live *)
+                |_ -> aux(x,y+1) board)
+            end
+            |_ -> aux(x+1,1) board
+      end
+      |_ -> board
+  in
+  aux (1,1) board;;
+
+  let rec play_bonus board =
+  Unix.sleep(1);
+  clear_graph();
+  match remaining_bonus(board) with
   | 0 -> draw_board board 20
   | _ -> draw_board board 20; play (iterate board);;
