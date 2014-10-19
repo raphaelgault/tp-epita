@@ -436,9 +436,43 @@ let iterate_bonus board =
   in
   aux (1,1) board;;
 
-  let rec play_bonus board =
+let rec play_bonus board =
   Unix.sleep(1);
   clear_graph();
   match remaining_bonus(board) with
   | 0 -> draw_board_bonus board 20;
   | _ -> draw_board_bonus board 20; play_bonus (iterate_bonus board);;
+
+
+(* 5.2 Creator *)
+
+(*
+let creator size board =
+  if button_down() then
+    let (a,b) = mouse_pos() in
+    if a > 0 && a < (my_list_length board)*size && 
+      b > 0 && b < (my_list_length board)*size then
+        let (x,y) = (a/size,b/size) in
+          match get_cell (x,y) board with
+          | 0 -> replace_cell 10 (x,y) board
+          | _ -> replace_cell 0 (x,y) board
+    else
+      board
+  else
+    board;;
+*)
+
+
+let creator size board = 
+  let (a,b) = mouse_pos() in
+  if a > 0 && a < (my_list_length board)*size &&
+    b > 0 && b < (my_list_length board)*size then
+      let (x,y) = (a/size,b/size) in
+        if button_down() then
+          match get_cell (x,y) board with
+          |0 -> replace_cell 10 (x,y) board
+          |_ -> replace_cell 0 (x,y) board
+        else
+          board
+      else
+        board;;
