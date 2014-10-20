@@ -35,7 +35,7 @@ let gen_rand_list n =
 
 let gen_board n =
   let rec aux d = function
-    |0 -> [[]]
+    |0 -> []
     |n -> (gen_list d) :: (aux d (n-1))
   in
   aux n n ;;
@@ -45,8 +45,8 @@ let gen_board n =
 (* Random List List *)
 
 let gen_rand_board n =
-  let rec aux d = function
-    |0 -> [[]]
+  let rec aux d = function (*d is dimension and n just a counter*)
+    |0 -> []
     |n -> (gen_rand_list d) :: (aux d (n-1))
   in
   aux n n ;;
@@ -61,9 +61,7 @@ let gen_rand_board n =
 
 let cell_count l =
   let rec aux n = function
-    |[]  -> 0
-    |0::[] -> n
-    |1::[] -> n+1
+    |[]  -> n
     |1::t -> aux (n+1) t
     |0::t -> aux n t
     |_ -> failwith "wrong element inside the list"
@@ -265,7 +263,7 @@ let iterate board =
           match y with
             |y when y <= length -> begin
               if (get_cell(x,y) board) = 1 then
-                match cell_count(get_cell_neighborhood (x,y) board) with
+                match cell_count(get_cell_neighborhood (x,y) board) with (*applying the rules*)
                 |n when n < 2 -> aux(x,y+1) (replace_cell 0 (x,y) board) (*dies*)
                 |n when n > 3 -> aux(x,y+1)(replace_cell 0 (x,y) board) (*dies*)
                 |_ -> aux(x,y+1) board (*lives/stays alive*)
@@ -291,6 +289,14 @@ let rec play board =
   | _ -> draw_board board 20; play (iterate board);;
 
 
+
+
+
+
+(*=================================================*)
+
+
+
 (*==================================================
                   STAGE 05 - Bonus
 ==================================================*)
@@ -314,27 +320,29 @@ _0 = rgb 42 42 42;;
 (** 5.1.2 Evolving **)
 
 let gen_rand_list_bonus n = 
-  let rec aux = function
+  let rec aux n = 
+  let seed =Random.int(2) in
+  match n with
     |0 -> []
-    |n -> (Random.int(2) * 10):: aux(n-1)
+    |n -> if seed = 1 then
+        10:: aux(n-1)
+      else
+        0:: aux(n-1)
   in
   aux n;;
 
 let gen_rand_board_bonus n =
   let rec aux d = function
-    |0 -> [[]]
-    |n -> (gen_rand_list d) :: (aux d (n-1))
+    |0 -> []
+    |n -> (gen_rand_list_bonus d) :: (aux d (n-1))
   in
   aux n n ;;
 
 let cell_count_bonus l =
   let rec aux n = function
-    |[]  -> 0
-    |h::[] when h <= 1 -> n
-    |h::[] when h <= 10 && h > 1 -> n+1
-    |h::t when h <= 10 && h > 1 -> aux (n+1) t
-    |h::t when h <= 1 -> aux n t
-    |_ -> failwith "wrong element inside the list"
+    |[]  -> n
+    |0::t -> aux n t
+    |h::t -> aux (n+1) t
   in 
   aux 0 l;; 
 
@@ -347,7 +355,7 @@ let remaining_bonus l =
 
 let draw_cell_bonus (x,y) size cell = 
   match cell with
-    |n when n <= 0 -> draw_square (x,y) size
+    |0 -> draw_square (x,y) size
     |1 -> draw_fill_square (x,y) size _1
     |2 -> draw_fill_square (x,y) size _2
     |3 -> draw_fill_square (x,y) size _3
@@ -358,7 +366,7 @@ let draw_cell_bonus (x,y) size cell =
     |8 -> draw_fill_square (x,y) size _8
     |9 -> draw_fill_square (x,y) size _9
     |10 -> draw_fill_square (x,y) size _10
-    |_ -> draw_fill_square (x,y) size _10(*failwith "invalid cell"*);;
+    |_ -> failwith "invalid cell";;
 
 let rec draw_line_bonus line size (x,y) =
   match line with
@@ -396,15 +404,30 @@ let iterate_bonus board =
       |x when x <= length ->begin
           match y with
             |y when y <= length -> begin
-              if (get_cell(x,y) board) = 1 then
-                match cell_count(get_cell_neighborhood (x,y) board) with
-                |n when n < 2 -> aux(x,y+1) (replace_cell (get_cell(x,y)board -2) (x,y) board) (*dies*)
-                |n when n = 3 -> aux(x,y+1)(replace_cell (get_cell(x,y)board +1) (x,y) board) (*dies*)
-                |n when n > 3 -> aux(x,y+1)(replace_cell (get_cell(x,y)board -5) (x,y) board) (*dies*)
+              if (get_cell(x,y) board) <> 0 then
+                match cell_count_bonus(get_cell_neighborhood (x,y) board) with (*applying the rules*)
+                |n when n < 2 -> begin
+                    if get_cell(x,y)board > 1 then
+                    aux(x,y+1) (replace_cell (get_cell(x,y)board -2) (x,y) board) (*looses 2 pts*)
+                    else
+                      aux(x,y+1) (replace_cell 0 (x,y) board) (*dies*)
+                end
+                |n when n = 3 -> begin
+                    if get_cell(x,y)board < 10 then
+                      aux(x,y+1)(replace_cell (get_cell(x,y)board +1) (x,y) board) (*earns 1 pt*)
+                    else
+                      aux(x,y+1) board (*keeps living*)
+                end 
+                |n when n > 3 -> begin
+                    if get_cell(x,y)board > 5 then
+                      aux(x,y+1) (replace_cell (get_cell(x,y)board -5) (x,y) board) (*looses 5 pts*)
+                    else
+                      aux(x,y+1) (replace_cell 0 (x,y) board) (*dies*)
+                end
                 |_ -> aux(x,y+1) board (*lives/stays alive*)
               else  
-                (match cell_count(get_cell_neighborhood (x,y) board) with
-                |3 -> aux(x,y+1)(replace_cell 1 (x,y) board) (*lives / comes to live *)
+                (match cell_count_bonus(get_cell_neighborhood (x,y) board) with
+                |3 -> aux(x,y+1)(replace_cell 10 (x,y) board) (*lives / comes to live *)
                 |_ -> aux(x,y+1) board)
             end
             |_ -> aux(x+1,1) board
@@ -413,9 +436,43 @@ let iterate_bonus board =
   in
   aux (1,1) board;;
 
-  let rec play_bonus board =
+let rec play_bonus board =
   Unix.sleep(1);
   clear_graph();
   match remaining_bonus(board) with
-  | 0 -> draw_board board 20
-  | _ -> draw_board board 20; play (iterate board);;
+  | 0 -> draw_board_bonus board 20;
+  | _ -> draw_board_bonus board 20; play_bonus (iterate_bonus board);;
+
+
+(* 5.2 Creator *)
+
+(*
+let creator size board =
+  if button_down() then
+    let (a,b) = mouse_pos() in
+    if a > 0 && a < (my_list_length board)*size && 
+      b > 0 && b < (my_list_length board)*size then
+        let (x,y) = (a/size,b/size) in
+          match get_cell (x,y) board with
+          | 0 -> replace_cell 10 (x,y) board
+          | _ -> replace_cell 0 (x,y) board
+    else
+      board
+  else
+    board;;
+*)
+
+
+let creator size board = 
+  let (a,b) = mouse_pos() in
+  if a > 0 && a < (my_list_length board)*size &&
+    b > 0 && b < (my_list_length board)*size then
+      let (x,y) = (a/size,b/size) in
+        if button_down() then
+          match get_cell (x,y) board with
+          |0 -> replace_cell 10 (x,y) board
+          |_ -> replace_cell 0 (x,y) board
+        else
+          board
+      else
+        board;;
