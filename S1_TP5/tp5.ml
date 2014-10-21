@@ -25,6 +25,11 @@ let rec my_power x = function
     |n -> x * my_power (x*x) (n/2);;
 
 
+let rec convert_10_to_2 x = 
+  match (x mod 2) with
+    |0 when x/2 = 0 -> [] (*end of conversion *)
+    |r -> append(convert_10_to_2 (x/2)) [r];;
+
 (*==========================================
             STAGE 00 - Must do
 ==========================================*)
@@ -140,3 +145,42 @@ let rec generate = function
      
 
 *)
+
+
+(* using a base converter function defined on the top *)
+let rec create_list el = function
+  |0 -> []
+  |n -> el::(create_list el (n-1));;
+
+
+let binary_to_uniform l length =
+  let diff_length = length - my_list_length l in
+    match diff_length with
+      |0 -> l
+      |d when d > 0 -> append (create_list 0 d) l
+      |_ -> failwith "length given is too short";;
+
+
+let rec binary_to_boolean ids bin = 
+  match (ids,bin) with
+    |([],[]) -> []
+    |(h::t,0::l) -> (h,False)::(binary_to_boolean t l)
+    |(h::t,1::l) -> (h,True)::(binary_to_boolean t l)
+    |_ -> failwith "invalid lists : not corresponding";;
+
+let binary_to_uniformed_boolean ids l length =
+  binary_to_boolean ids (binary_to_uniform l length);;
+
+
+let generate l =
+  let length = my_list_length l in
+  let combination = my_power 2 length in
+  let rec aux = function
+    |0 -> [binary_to_uniformed_boolean l [0] length]
+    |n -> (binary_to_uniformed_boolean l (convert_10_to_2 n) length)::aux (n-1)
+  in 
+  aux (combination - 1)
+
+
+ 
+
