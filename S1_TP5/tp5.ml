@@ -1,3 +1,12 @@
+(* auxiliary *)
+
+let append l1 l2 = 
+  let rec aux = function
+    |[] -> l2
+    |h::t -> h::(aux t)
+  in 
+  aux l1;;
+
 (*==========================================
             STAGE 00 - Must do
 ==========================================*)
@@ -61,3 +70,19 @@ let rec value s = function
     if a = s then
      bundle
     else value s t;;
+
+(* 1.2 Extraction *)
+
+let rec extract = function
+  |True | False -> []
+  |Var s -> [s]
+  |Not b -> extract b
+  |And (b1,b2) | Or (b1,b2) -> append (extract b1) (extract b2);;
+
+(* 1.3 Generate *)
+
+(*
+let rec generate = function
+  |[] ->[]
+  |h::t -> (h,True)::(h,False)::(generate t);;
+i*)
