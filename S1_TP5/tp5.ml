@@ -184,3 +184,13 @@ let eval expr l =
       |_ -> False
     end
   |_ -> failwith "invalid boolean expression";;
+
+let evaluate expr =
+  let ids = generate(extract expr) in
+  let rec aux = function
+    |[] -> []
+    |h::t -> (h,eval expr h)::aux t
+  in
+  aux ids;;
+
+
