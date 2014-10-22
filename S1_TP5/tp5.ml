@@ -30,6 +30,9 @@ let rec convert_10_to_2 x =
     |0 when x/2 = 0 -> [] (*end of conversion *)
     |r -> append(convert_10_to_2 (x/2)) [r];;
 
+
+
+
 (*==========================================
             STAGE 00 - Must do
 ==========================================*)
@@ -108,18 +111,9 @@ let extract b =
 
 (* 1.3 Generate *)
 
+
+(* using distributivity *)
 (*
-let rec generate = function
-  |[] ->[]
-  |h::t -> (h,True)::(h,False)::(generate t);;
-i*)
-
-(*step 1 : count number of given identifiers -> my_list_length *)
-(*step 2 : compute number of combination -> power of 2 *)
-(*step 3 : fix the first id for 2^(n-1) combination and the second id for
- * 2^(n-2) ... n id not fixed -> move at every combination *)
-(*step 4 : each combination is stored inside a list which is in a list too *)
-
 let rec distrib a = function
   |[] -> []
   |h::t -> (a::h)::distrib a t
@@ -129,22 +123,8 @@ let rec generate = function
   |h::[] -> [(h,True)]::[(h,False)]::[]
   |h1::t -> distrib (h1,True) (generate t)@
     distrib (h1,False) (generate t);;
-
-
-
-(*
-let rec generate = function
-    |[] -> []
-    |h::[] -> combine h
-    |h1::h2::t ->
-      begin 
-        match (combine h1,combine h2) with 
-          |(a1::a2::[],b1::b2::[]) -> [b1::a1]::[b1::[a2]]::[b2::[a1]]::[b2::[a2]]::[]
-          |_ -> failwith "booh" 
-      end;;
-     
-
 *)
+
 
 
 (* using a base converter function defined on the top *)
@@ -183,4 +163,22 @@ let generate l =
 
 
  
+(* 1.4 Evaluation *)
 
+let eval expr l =
+  match expr with
+  |Not b -> begin
+    match l with
+      |(a,True)::[] -> False
+      |(a,False)::[] -> True
+    end
+  |And (b1,b2) -> begin 
+    match l with
+      |(a,True)::(b,True)::[] -> True
+      |_ -> False
+    end
+  |Or (b1,b2) -> begin
+    match l with
+      |(_,True)::h::[] | h::(_,True)::[] -> True
+      |_ -> False
+    end;;
