@@ -171,6 +171,7 @@ let eval expr l =
     match l with
       |(a,True)::[] -> False
       |(a,False)::[] -> True
+      |_ -> failwith "invalid list of boolean"
     end
   |And (b1,b2) -> begin 
     match l with
@@ -181,4 +182,5 @@ let eval expr l =
     match l with
       |(_,True)::h::[] | h::(_,True)::[] -> True
       |_ -> False
-    end;;
+    end
+  |_ -> failwith "invalid boolean expression";;
