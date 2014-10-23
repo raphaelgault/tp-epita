@@ -30,7 +30,10 @@ let rec convert_10_to_2 x =
     |0 when x/2 = 0 -> [] (*end of conversion *)
     |r -> append(convert_10_to_2 (x/2)) [r];;
 
-
+let rec foot = function
+  |Item(a,Empty) -> a
+  |Item(a,bund) -> foot bund 
+  |Empty -> failwith "no foot"
 
 
 (*==========================================
@@ -225,4 +228,34 @@ let display l =
                   STAGE 02 - Parsing
 =========================================================*)
 
+
+(* 2.1 Parse *) 
+
+let parse s =
+  let length = String.length s in
+  let rec aux n bund =
+    if n < length then
+    match s.[n] with
+      |'!' -> (cons (aux (n+1) bund) s.[n])
+      |'&' -> (cons (aux (n+1) bund) s.[n])
+      |'|' -> (cons (aux (n+1) bund) s.[n])
+      |_ -> aux (n+1) (cons bund s.[n]) 
+    else
+      bund
+  in
+  aux 0 (empty_bundle ()) ;;
+
+
+(* 2.2 Builder *)
+
+(* using foot function defined at the top *)
+
+let rec builder bund = 
+  if is_empty bund then
+    bund
+  else
+  match head bund with
+    |'|' -> Or(builder (tail bund),foot bund)
+    |'&' -> And(builder (tail bund,foot bund))
+    |'!' -> Not(builder (tail bund,foot bund));;
 
