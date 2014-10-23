@@ -194,3 +194,35 @@ let evaluate expr =
   aux ids;;
 
 
+(* 1.5 Display *)
+
+let print_ids = function
+  |h::t -> begin 
+    match h with
+      |((a,b1)::(b,b2)::[],b3) -> print_string (a^" "^b);print_newline();
+      |_ -> ()
+    end
+  |_ -> ();;
+
+let print_bool = function
+  |True -> print_string("T")
+  |False -> print_string("F")
+  |_ -> failwith "wrong boolean value";;
+
+let display l = 
+  print_ids l;
+  let rec aux = function
+    |((a,b1)::(b,b2)::[],b3)::t -> print_bool b1;print_string(" ");print_bool b2;
+      print_string("  ");print_bool(b3);print_newline(); aux t;
+    |_ -> ()
+  in
+  aux l;;
+
+
+
+
+(*=========================================================
+                  STAGE 02 - Parsing
+=========================================================*)
+
+
