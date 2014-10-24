@@ -30,11 +30,6 @@ let rec convert_10_to_2 x =
     |0 when x/2 = 0 -> [] (*end of conversion *)
     |r -> append(convert_10_to_2 (x/2)) [r];;
 
-let rec foot = function
-  |Item(a,Empty) -> a
-  |Item(a,bund) -> foot bund 
-  |Empty -> failwith "no foot"
-
 
 (*==========================================
             STAGE 00 - Must do
@@ -248,14 +243,45 @@ let parse s =
 
 (* 2.2 Builder *)
 
-(* using foot function defined at the top *)
+let extract_bundle bund =
+  let rec aux l = function
+    |Item(a,Empty) -> a::l
+    |Item(a,bundle) -> (aux (a::l) bundle)
+    |Empty -> failwith "extraction failed : empty bundle"
+  in 
+  aux [] bund;;
+
+let rec foot = function
+  |Item(a,Empty) -> a
+  |Item(a,bundle) -> foot bundle
+  |Empty -> failwith "Foot failed : Empty bundle";;
+
+let mid_bundle bund = 
+  let l = match extract_bundle bund with
+      |h::t -> t
+      |_ -> failwith "empty list"
+  in
+  let rec aux mid = function
+    |h::[] -> mid
+    |h::t -> aux (cons mid h) t
+    |_ -> failwith "only one element in the list"
+  in
+  aux (empty_bundle ()) l;;
+
 
 let rec builder bund = 
   if is_empty bund then
-    bund
+    True
   else
   match head bund with
-    |'|' -> Or(builder (tail bund),foot bund)
-    |'&' -> And(builder (tail bund,foot bund))
-    |'!' -> Not(builder (tail bund,foot bund));;
+    |'|' -> Or(builder (mid_bundle bund),Var (String.make 1 (foot bund)))
+    |'&' -> And(builder (mid_bundle bund),Var (String.make 1 (foot bund)))
+    |'!' -> Not(builder (tail bund))
+    |el -> Var (String.make 1 el);;
 
+
+
+(* 2.3 Truth table *)
+
+let truth_table s =
+  display (evaluate (builder (parse s)));;
