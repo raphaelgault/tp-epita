@@ -268,6 +268,9 @@ let mid_bundle bund =
   in
   aux (empty_bundle ()) l;;
 
+let get_second bund =
+  head tail bund;;
+
 
 let rec builder bund = 
   if is_empty bund then
@@ -278,6 +281,22 @@ let rec builder bund =
     |'&' -> And(builder (mid_bundle bund),Var (String.make 1 (foot bund)))
     |'!' -> Not(builder (tail bund))
     |el -> Var (String.make 1 el);;
+
+(*
+let rec sub_builder bundle =
+    |'|' -> (sub_builder tail bundle,  
+
+let rec builder bund = 
+  if is_empty bund then
+    True
+  else
+  match head bund with
+    |'|' -> let (first, tail) = sub_builder bund in Or(first, builder tail)
+
+
+
+
+*)
 
 
 
