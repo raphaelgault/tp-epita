@@ -226,6 +226,7 @@ let display l =
 
 (* 2.1 Parse *) 
 
+(*
 let parse s =
   let length = String.length s in
   let rec aux n bund =
@@ -239,6 +240,34 @@ let parse s =
       bund
   in
   aux 0 (empty_bundle ()) ;;
+
+*)
+
+let parse s =
+  let length = String.length s in
+  let rec aux n output operators =
+    if n < length then
+      match s.[n] with
+        |'!' -> aux (n+1) output (cons operators s.[n])
+        |'&' -> if is_empty operators then
+          aux (n+1) output (cons operators s.[n])
+          else
+            (match head operators with
+              |'!' -> aux (n+1) (cons output '!') (cons (tail operators) '!')
+              |_ -> aux (n+1) output (cons operators (head operators)))
+        |'|' -> if is_empty operators then
+          aux (n+1) output (cons operators s.[n])
+          else
+          aux (n+1) (cons output(head operators))(cons(tail operators) s.[n])
+        |_ -> aux (n+1) (cons output s.[n]) operators
+    else
+      if is_empty operators then
+        output
+      else
+        aux n (cons output (head operators)) (tail operators)
+  in
+  aux 0 (empty_bundle()) (empty_bundle());;
+
 
 
 (* 2.2 Builder *)
@@ -269,7 +298,7 @@ let mid_bundle bund =
   aux (empty_bundle ()) l;;
 
 let get_second bund =
-  head tail bund;;
+  head (tail bund);;
 
 
 let rec builder bund = 
