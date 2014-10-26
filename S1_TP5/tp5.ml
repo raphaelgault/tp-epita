@@ -31,6 +31,10 @@ let rec convert_10_to_2 x =
     |r -> append(convert_10_to_2 (x/2)) [r];;
 
 
+
+
+
+
 (*==========================================
             STAGE 00 - Must do
 ==========================================*)
@@ -71,6 +75,9 @@ let tail = function
 
 
 
+
+
+
 (*===========================================
              STAGE 01 - Boolean Expression
 ===========================================*)
@@ -106,6 +113,10 @@ let extract b =
     |And (b1,b2) | Or (b1,b2) -> aux (aux l b1) b2
   in
   aux [] b;;
+
+
+
+
 
 (* 1.3 Generate *)
 
@@ -160,6 +171,8 @@ let generate l =
   aux (combination - 1)
 
 
+
+
  
 (* 1.4 Evaluation *)
 
@@ -192,54 +205,45 @@ let evaluate expr =
   aux ids;;
 
 
-(* 1.5 Display *)
 
-let print_ids = function
-  |h::t -> begin 
-    match h with
-      |((a,b1)::(b,b2)::[],b3) -> print_string (a^" "^b);print_newline();
-      |_ -> ()
-    end
-  |_ -> ();;
+
+
+(* 1.5 Display *)
 
 let print_bool = function
   |True -> print_string("T")
   |False -> print_string("F")
   |_ -> failwith "wrong boolean value";;
 
-let display l = 
-  print_ids l;
-  let rec aux = function
-    |((a,b1)::(b,b2)::[],b3)::t -> print_bool b1;print_string(" ");print_bool b2;
-      print_string("  ");print_bool(b3);print_newline(); aux t;
-    |_ -> ()
-  in
-  aux l;;
 
-
-(*
 let rec print_ids = function
-  |h::t -> begin
-    match h with
-      |((a,b1)::t,b2)::[] -> print_string (a);print_newline()
-      |((a,b1)::t,b2)::l -> print_string (a^" ");print_ids t;
-      |_ -> ()
-    end
+  |h::[] -> print_string ((fst h)^" ");print_newline()
+  |h::t -> print_string ((fst h)^" ");print_ids t
   |_ -> ();;
 
+let print_ids_inline l =
+   match l with
+    |h::t -> print_ids (fst h)
+    |[] -> ();;
+   (* |_ -> failwith "wrong list";*)
 
-let rec display_inline = function
-  |(a,b)::[] -> print_bool b1;print_newline()
-  |(a,b)::t -> print_bool;print_string " "; display_inline t;;
+let rec print_line = function
+  |h::[] -> print_bool(snd h);print_string("  ")
+  |h::t -> print_bool(snd h);print_string(" ");print_line t
+  |_ -> failwith "booh";;
 
-let rec display l = 
-  print_ids l;
+let print_result = function
+  |(l,b) -> print_bool(b);print_newline();;
+
+let display l = 
+  print_ids_inline l;
   let rec aux = function
-    |(h,b)::[] -> display_inline h;
-    |(h,b)::t -> display_inline h; display t
+    |h::[] -> print_line(fst h);print_result h
+    |h::t -> print_line(fst h);print_result h;aux t
+    |_ ->()
   in
   aux l;;
-*)
+
 
 
 
@@ -249,23 +253,6 @@ let rec display l =
 
 
 (* 2.1 Parse *) 
-
-(*
-let parse s =
-  let length = String.length s in
-  let rec aux n bund =
-    if n < length then
-    match s.[n] with
-      |'!' -> (cons (aux (n+1) bund) s.[n])
-      |'&' -> (cons (aux (n+1) bund) s.[n])
-      |'|' -> (cons (aux (n+1) bund) s.[n])
-      |_ -> aux (n+1) (cons bund s.[n]) 
-    else
-      bund
-  in
-  aux 0 (empty_bundle ()) ;;
-
-*)
 
 let parse s =
   let length = String.length s in
@@ -291,6 +278,9 @@ let parse s =
         aux n (cons output (head operators)) (tail operators)
   in
   aux 0 (empty_bundle()) (empty_bundle());;
+
+
+
 
 
 
@@ -335,21 +325,6 @@ let rec builder bund =
     |'!' -> Not(builder (tail bund))
     |el -> Var (String.make 1 el);;
 
-(*
-let rec sub_builder bundle =
-    |'|' -> (sub_builder tail bundle,  
-
-let rec builder bund = 
-  if is_empty bund then
-    True
-  else
-  match head bund with
-    |'|' -> let (first, tail) = sub_builder bund in Or(first, builder tail)
-
-
-
-
-*)
 
 
 let reverse bundle =
@@ -369,15 +344,19 @@ let builder bundle =
     |'&'::t ->(match stack with
       |h1::h2::l -> aux (And(h1,h2)::l) t
       |_ -> failwith "blob")
-   (* |'!'::t ->(match stack with
-      |h1::l -> aux (Not(h1))::l t
-      |_ -> failwith "42")*)
+    |'!'::t -> (match stack with
+      |h1::l -> aux ((Not(h1))::l) t
+      |_ -> failwith "42")
     |h::t -> aux ((Var (String.make 1 h))::stack) t
     |[] -> (match stack with
       |h::[] -> h
       |_ -> failwith "bab")
   in 
   aux [] expr;;
+
+
+
+
 
 (* 2.3 Truth table *)
 
