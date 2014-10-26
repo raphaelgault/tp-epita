@@ -217,6 +217,30 @@ let display l =
   aux l;;
 
 
+(*
+let rec print_ids = function
+  |h::t -> begin
+    match h with
+      |((a,b1)::t,b2)::[] -> print_string (a);print_newline()
+      |((a,b1)::t,b2)::l -> print_string (a^" ");print_ids t;
+      |_ -> ()
+    end
+  |_ -> ();;
+
+
+let rec display_inline = function
+  |(a,b)::[] -> print_bool b1;print_newline()
+  |(a,b)::t -> print_bool;print_string " "; display_inline t;;
+
+let rec display l = 
+  print_ids l;
+  let rec aux = function
+    |(h,b)::[] -> display_inline h;
+    |(h,b)::t -> display_inline h; display t
+  in
+  aux l;;
+*)
+
 
 
 (*=========================================================
@@ -328,6 +352,32 @@ let rec builder bund =
 *)
 
 
+let reverse bundle =
+  let rec aux l = function
+    |Item(a,Empty) -> a::l
+    |Item(a,bundle) -> aux (a::l) bundle
+    |Empty -> l
+  in
+  aux [] bundle;; 
+
+let builder bundle =
+  let expr = reverse bundle in
+  let rec aux stack = function
+    |'|'::t -> (match stack with
+      |h1::h2::l -> aux (Or(h1,h2)::l) t
+      |_ -> failwith "blabla")
+    |'&'::t ->(match stack with
+      |h1::h2::l -> aux (And(h1,h2)::l) t
+      |_ -> failwith "blob")
+   (* |'!'::t ->(match stack with
+      |h1::l -> aux (Not(h1))::l t
+      |_ -> failwith "42")*)
+    |h::t -> aux ((Var (String.make 1 h))::stack) t
+    |[] -> (match stack with
+      |h::[] -> h
+      |_ -> failwith "bab")
+  in 
+  aux [] expr;;
 
 (* 2.3 Truth table *)
 
