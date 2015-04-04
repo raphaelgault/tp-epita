@@ -1,8 +1,8 @@
-#!/usr/bin/env ocaml
+﻿#!/usr/bin/env ocaml
 
 open Complex;;
 open Random;;
-
+//commentaire
 
 #load "graphics.cma";;
 open Graphics;;
